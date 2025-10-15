@@ -1,24 +1,26 @@
 package main
 
 import (
-	y2023 "advent-of-go/solutions/2023"
+	"advent-of-go/solutions"
 	"advent-of-go/utils"
 	"fmt"
 	"testing"
 )
 
 func TestSolutions(t *testing.T) {
-	testSolutions(t, "2023", y2023.Solutions())
+	for _, solutionSet := range solutions.Solutions() {
+		testSolutions(t, solutionSet.Year, solutionSet.Solutions)
+	}
 }
 
-func testSolutions(t *testing.T, year string, solutions []utils.Solution) {
-	answers, e := utils.GetFileLines(fmt.Sprintf("answers/%s/answers.txt", year))
+func testSolutions(t *testing.T, year int, solutions []utils.Solution) {
+	answers, e := utils.GetFileLines(fmt.Sprintf("answers/%d/answers.txt", year))
 	if e != nil {
-		t.Errorf("Error opening answers file for year %s: %v", year, e)
+		t.Errorf("Error opening answers file for year %d: %v", year, e)
 		return
 	}
 	if len(answers) != len(solutions) {
-		t.Errorf("Length of solutions and answers differs for year %s: solutions has length %d, answers has length %d", year, len(solutions), len(answers))
+		t.Errorf("Length of solutions and answers differs for year %d: solutions has length %d, answers has length %d", year, len(solutions), len(answers))
 		return
 	}
 	for i, s := range solutions {

@@ -1,14 +1,16 @@
 package main
 
 import (
-	y2023 "advent-of-go/solutions/2023"
+	"advent-of-go/solutions"
 	"advent-of-go/utils"
 	"fmt"
 )
 
 func main() {
-	for _, s := range y2023.Solutions() {
-		printSolution(s)
+	for _, solutionSet := range solutions.Solutions() {
+		for _, s := range solutionSet.Solutions {
+			printSolution(s)
+		}
 	}
 }
 

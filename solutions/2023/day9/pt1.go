@@ -25,6 +25,9 @@ func pt1(input string) (string, error) {
 
 func extrapolateLine(line string, rev bool) int {
 	nums := utils.FindInts(line)
+	if len(nums) == 0 {
+		return 0
+	}
 	if rev {
 		nums = utils.Rev(nums)
 	}
@@ -46,13 +49,13 @@ func propagateForward(numStack [][]int) [][]int {
 func propagateBackward(numStack [][]int) int {
 	extrapolated := 0
 	for i := len(numStack) - 1; i > 0; i-- {
-		extrapolated += utils.Last(numStack[i - 1]) 
+		extrapolated += utils.Last(numStack[i - 1]).OrPanic("Row should never be empty!")
 	}
 	return extrapolated
 }
 
 func forwardOnce(numStack [][]int) ([][]int, bool) {
-	currentNums := utils.Last(numStack)
+	currentNums := utils.Last(numStack).OrPanic("This stack should never be empty!")
 	done := true
 	nextNums := make([]int, len(currentNums) - 1)
 	for i := range nextNums {

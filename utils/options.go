@@ -21,11 +21,15 @@ func (o Option[T]) OrErr(message string) (T, error) {
 	return o.value, errors.New(message)
 }
 
-func (o Option[T]) Get() (T, bool) {
+func (o Option[T]) OrPanic(message string) T {
 	if o.hasValue {
-		return o.value, true
+		return o.value
 	}
-	return o.value, false
+	panic(message)
+}
+
+func (o Option[T]) Get() (T, bool) {
+	return o.value, o.hasValue
 }
 
 func Some[T any](value T) Option[T] {

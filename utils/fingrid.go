@@ -5,39 +5,47 @@ import (
 	"slices"
 )
 
-type Grid[T comparable] struct {
+type FinGrid[T comparable] struct {
 	items []T
 	width int
 	height int
 }
 
-func GridFromString(s string) Grid[rune] {
+func GridFromString(s string) FinGrid[rune] {
 	return GridFromLines(GetLines(s))
 }
 
-func GridFromLines(lines []string) Grid[rune] {
+func GridFromSlice[T comparable](s []T, width int) FinGrid[T] {
+	height := len(s) / width
+	if len(s) % width != 0 {
+		height++
+	}
+	return FinGrid[T]{s, width, height}
+}
+
+func GridFromLines(lines []string) FinGrid[rune] {
 	runes := StringsToRunes(lines)
 	return GridFrom2dSlice(runes)
 }
 
-func GridFrom2dSlice[T comparable](slices [][]T) Grid[T] {
+func GridFrom2dSlice[T comparable](slices [][]T) FinGrid[T] {
 	width := 0
 	if len(slices) != 0 {
 		width = len(slices[0])
 	}
-	return Grid[T]{Flatten(slices), width, len(slices)}
+	return FinGrid[T]{Flatten(slices), width, len(slices)}
 }
 
-func BlankGrid[T comparable](width, height int) Grid[T] {
+func BlankGrid[T comparable](width, height int) FinGrid[T] {
 	items := make([]T, width*height)
-	return Grid[T]{items, width, height}
+	return FinGrid[T]{items, width, height}
 }
 
-func (g *Grid[T]) Dims() (int, int) {
+func (g *FinGrid[T]) Dims() (int, int) {
 	return g.width, g.height
 }
 
-func (g *Grid[T]) At(x int, y int) Option[T] {
+func (g *FinGrid[T]) At(x int, y int) Option[T] {
 	if x < 0 || y < 0 {
 		return None[T]()
 	}
@@ -48,7 +56,7 @@ func (g *Grid[T]) At(x int, y int) Option[T] {
 	return Some(g.items[idx])
 }
 
-func (g *Grid[T]) Set(x, y int, value T) error {
+func (g *FinGrid[T]) Set(x, y int, value T) error {
 	if x < 0 || y < 0 {
 		return errors.New("Coordinates out of bounds!")
 	}
@@ -64,7 +72,7 @@ type Point struct {
 	X, Y int
 }
 
-func (g *Grid[T]) Find(item T) Option[Point] {
+func (g *FinGrid[T]) Find(item T) Option[Point] {
 	i := slices.Index(g.items, item)
 	if i >= 0 {
 		return Some(Point{i % g.width, i / g.width})
@@ -72,7 +80,7 @@ func (g *Grid[T]) Find(item T) Option[Point] {
 	return None[Point]()
 }
 
-func (g *Grid[T]) FindAll(item T) []Point {
+func (g *FinGrid[T]) FindAll(item T) []Point {
 	all := []Point{}
 	for i, v := range g.items {
 		if v == item {

@@ -37,7 +37,7 @@ func pt2(input string) (string, error) {
 	return strconv.Itoa(total), nil
 }
 
-func initializeNumGrid(lines []string) (utils.Grid[numWithPos], error) {
+func initializeNumGrid(lines []string) (utils.FinGrid[numWithPos], error) {
 	width, height := 0, len(lines)
 	if height > 0 {
 		width = len(lines[0])
@@ -60,7 +60,7 @@ func initializeNumGrid(lines []string) (utils.Grid[numWithPos], error) {
 	return grid, nil
 }
 
-func getLineTotal(y int, line string, grid utils.Grid[numWithPos]) (int, error) {
+func getLineTotal(y int, line string, grid utils.FinGrid[numWithPos]) (int, error) {
 	total := 0
 	for _, match := range starRegex.FindAllStringIndex(line, -1) {
 		ratio, e := getTotalForNumMap(getNumMapForGear(match[0], y, grid))
@@ -72,7 +72,7 @@ func getLineTotal(y int, line string, grid utils.Grid[numWithPos]) (int, error) 
 	return total, nil
 }
 
-func getNumMapForGear(x, y int, grid utils.Grid[numWithPos]) map[numWithPos]string {
+func getNumMapForGear(x, y int, grid utils.FinGrid[numWithPos]) map[numWithPos]string {
 	nums := map[numWithPos]string{}
 	for xOffset := -1; xOffset <= 1; xOffset++ {
 		for yOffset := -1; yOffset <= 1; yOffset++ {

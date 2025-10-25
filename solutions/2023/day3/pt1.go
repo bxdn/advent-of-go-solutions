@@ -53,7 +53,7 @@ func getLineNums(y int, line string) []numWithPos {
 	return toRet
 }
 
-func getNumTotal(strNum numWithPos, grid utils.Grid[rune]) (int, error) {
+func getNumTotal(strNum numWithPos, grid utils.FinGrid[rune]) (int, error) {
 	border := getBorder(strNum, grid)
 	for _, char := range border {
 		if !unicode.IsDigit(char) && '.' != char {
@@ -63,7 +63,7 @@ func getNumTotal(strNum numWithPos, grid utils.Grid[rune]) (int, error) {
 	return 0, nil
 }
 
-func getBorder(strNum numWithPos, grid utils.Grid[rune]) []rune {
+func getBorder(strNum numWithPos, grid utils.FinGrid[rune]) []rune {
 	length := len(strNum.numString)
 	toRet := make([]rune, 0, length * 2 + 6)
 	x, y := strNum.x, strNum.y

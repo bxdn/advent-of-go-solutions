@@ -1,7 +1,7 @@
 package solutions
 
 import (
-	y2023 "advent-of-go/solutions/2023"
+	y2019 "advent-of-go/solutions/2019"
 	"advent-of-go/utils"
 )
 
@@ -12,6 +12,7 @@ type solutionSet struct {
 
 func Solutions() []solutionSet { 
 	return []solutionSet{
-		solutionSet{2023, y2023.Solutions()},
+		solutionSet{2019, y2019.Solutions()},
+		// solutionSet{2023, y2023.Solutions()},
 	}
 }

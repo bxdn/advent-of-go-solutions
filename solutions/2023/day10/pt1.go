@@ -52,7 +52,7 @@ func pt1(input string) (string, error) {
 	return strconv.Itoa(totalSteps / 2), nil
 }
 
-func FindLoopCountSteps(grid utils.Grid[rune], startingPoint utils.Point) (int, []utils.Point, error) {
+func FindLoopCountSteps(grid utils.FinGrid[rune], startingPoint utils.Point) (int, []utils.Point, error) {
 	for _, direction := range directions {
 		nextX, nextY := transform(direction, startingPoint.X, startingPoint.Y)
 		nextRune := grid.At(nextX, nextY).Or('.')
@@ -75,7 +75,7 @@ func FindLoopCountSteps(grid utils.Grid[rune], startingPoint utils.Point) (int, 
 	return 0, nil, errors.New("No connecting pipes to starting point!")
 }
 
-func CountStepsInRestOfLoop(x, y int, direction Direction, grid utils.Grid[rune], vertices []utils.Point) (int, []utils.Point, Direction, error) {
+func CountStepsInRestOfLoop(x, y int, direction Direction, grid utils.FinGrid[rune], vertices []utils.Point) (int, []utils.Point, Direction, error) {
 	currentChar := grid.At(x, y).Or('.')
 	if currentChar == 'S' {
 		return 0, vertices, direction, nil

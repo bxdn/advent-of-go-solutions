@@ -2,6 +2,7 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"slices"
 )
 
@@ -88,4 +89,14 @@ func (g *FinGrid[T]) FindAll(item T) []Point {
 		}
 	}
 	return all
+}
+
+func PrintGrid(g FinGrid[rune]) {
+	for i, char := range g.items {
+		if i % g.width == 0 {
+			fmt.Print("\n")
+		}
+		fmt.Printf("%c", char)
+	}
+	println()
 }

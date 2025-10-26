@@ -14,7 +14,7 @@ func TestSolutions(t *testing.T) {
 }
 
 func testSolutions(t *testing.T, year int, solutions []utils.Solution) {
-	answers, e := utils.GetFileLines(fmt.Sprintf("answers/%d/answers.txt", year))
+	answers, e := utils.GetFileLines(fmt.Sprintf("private/answers/%d.txt", year))
 	if e != nil {
 		t.Errorf("Error opening answers file for year %d: %v", year, e)
 		return

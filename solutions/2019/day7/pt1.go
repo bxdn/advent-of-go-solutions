@@ -3,10 +3,7 @@ package day7
 import (
 	"advent-of-go/solutions/2019/intcode"
 	"advent-of-go/utils"
-	"fmt"
-	"slices"
 	"strconv"
-	"strings"
 )
 
 func Pt1() utils.Solution {
@@ -20,18 +17,15 @@ func Pt1() utils.Solution {
 
 func pt1(input string) (string, error) {
 	nums := []int{0, 1, 2, 3, 4}
-	baseProgram, e := utils.StringsToInts(strings.Split(input, ","))
-	if e != nil {
-		return "", fmt.Errorf("Error parsing program: %w", e)
-	}
 	maxSignal := 0
+	var e error
 	permutations(nums, func(p []int) {
-		maxSignal = max(maxSignal, runPermutation(baseProgram, p))
+		maxSignal = max(maxSignal, runPermutation(input, p))
 	})
-	return strconv.Itoa(maxSignal), nil
+	return strconv.Itoa(maxSignal), e
 }
 
-func runPermutation(baseProgram []int, phases []int) int {
+func runPermutation(program string, phases []int) int {
 	outputSignal := 0
 	for _, phase := range phases {
 		sendPhase := true
@@ -43,7 +37,7 @@ func runPermutation(baseProgram []int, phases []int) int {
 			return outputSignal
 		}
 		output := func(n int) {outputSignal = n}
-		intcode.Run(slices.Clone(baseProgram), input, output)
+		intcode.RunString(program, input, output)
 	}
 	return outputSignal
 }

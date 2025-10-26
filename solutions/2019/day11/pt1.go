@@ -3,9 +3,7 @@ package day11
 import (
 	"advent-of-go/solutions/2019/intcode"
 	"advent-of-go/utils"
-	"fmt"
 	"strconv"
-	"strings"
 )
 
 type color int
@@ -34,18 +32,14 @@ func Pt1() utils.Solution {
 }
 
 func pt1(input string) (string, error) {
-	ops, e := utils.StringsToInts(strings.Split(input, ","))
-	if e != nil {
-		return "", fmt.Errorf("Error parsing input: %w", e)
-	}
 	grid := utils.NewInfGrid[color]()
-	runBot(ops, grid)
+	runBot(input, grid)
 	numWhite := len(grid.FindAll(White))
 	numBlack := len(grid.FindAll(Black))
 	return strconv.Itoa(numWhite + numBlack), nil
 }
 
-func runBot(ops []int, grid utils.InfGrid[color]) {
+func runBot(program string, grid utils.InfGrid[color]) {
 	botX, botY := 0, 0
 	botOrientation := Up
 	painting := true
@@ -69,5 +63,5 @@ func runBot(ops []int, grid utils.InfGrid[color]) {
 	in := func () int {
 		return int(grid.At(botX, botY).Or(Black))
 	}
-	intcode.Run(ops, in, out)
+	intcode.RunString(program, in, out)
 }

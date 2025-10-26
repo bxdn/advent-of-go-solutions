@@ -1,6 +1,11 @@
 package intcode
 
-import "slices"
+import (
+	"advent-of-go/utils"
+	"fmt"
+	"slices"
+	"strings"
+)
 
 // types
 
@@ -33,13 +38,31 @@ type program struct {
 
 var N_ARGS = [10]int{-1, 3, 3, 1, 1, 2, 2, 3, 3, 1}
 
+func RunString(instructionString string, input inFunc, output outFunc) error {
+	ops, e := utils.StringsToInts(strings.Split(instructionString, ","))
+	if e != nil {
+		return fmt.Errorf("Error parsing intcode input: %w", e)
+	}
+	return Run(ops, input, output)
+}
+
+func RunBasicString(instructionString string) error {
+	ops, e := utils.StringsToInts(strings.Split(instructionString, ","))
+	if e != nil {
+		return fmt.Errorf("Error parsing incode input: %w", e)
+	}
+	return RunBasic(ops)
+}
+
 func Run(rawInstructions []int, input inFunc, output outFunc) error {
 	program := program{mem: rawInstructions, inputFunc: input, outputFunc: output}
 	for {
 		if halt := program.parseInstruction(); halt {
 			return nil
 		}
-		program.runInst()
+		if e := program.runInst(); e != nil {
+			return fmt.Errorf("Error running intocode program: %w", e)
+		}
 	}
 }
 
@@ -50,7 +73,7 @@ func RunBasic(ops []int) error {
 	return nil
 }
 
-func (prog *program) runInst() {
+func (prog *program) runInst() error {
 	switch prog.inst.op {
 		case 1: prog.add()
 		case 2: prog.mult()
@@ -61,7 +84,9 @@ func (prog *program) runInst() {
 		case 7: prog.lt()
 		case 8: prog.eq()
 		case 9: prog.crb()
+		default: return fmt.Errorf("Unknown operation %d detected!", prog.inst.op)
 	}
+	return nil
 }
 
 func (p *program) at(i int) int {

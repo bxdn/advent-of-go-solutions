@@ -14,6 +14,14 @@ func (o Option[T]) Or(alternative T) T {
 	return alternative
 }
 
+func (o Option[T]) OrDefault() T {
+	var t T
+	if o.hasValue {
+		return o.value
+	}
+	return t
+}
+
 func (o Option[T]) OrErr(message string) (T, error) {
 	if o.hasValue {
 		return o.value, nil

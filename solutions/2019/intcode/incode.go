@@ -3,11 +3,14 @@ package intcode
 import (
 	"advent-of-go/utils"
 	"fmt"
+	"math"
 	"slices"
 	"strings"
 )
 
 // types
+
+const HALT_CODE = math.MinInt
 
 type opfunc func()
 type outFunc func(int)
@@ -34,6 +37,7 @@ type program struct {
 	base int
 	inputFunc inFunc
 	outputFunc outFunc
+	halt bool
 }
 
 var N_ARGS = [10]int{-1, 3, 3, 1, 1, 2, 2, 3, 3, 1}
@@ -62,6 +66,24 @@ func Run(rawInstructions []int, input inFunc, output outFunc) error {
 		}
 		if e := program.runInst(); e != nil {
 			return fmt.Errorf("Error running intocode program: %w", e)
+		}
+		if program.halt {
+			return nil
+		}
+	}
+}
+
+func RunAt(rawInstructions []int, input inFunc, output outFunc, pos int) error {
+	program := program{mem: rawInstructions, inputFunc: input, outputFunc: output, pos: pos}
+	for {
+		if halt := program.parseInstruction(); halt {
+			return nil
+		}
+		if e := program.runInst(); e != nil {
+			return fmt.Errorf("Error running intocode program: %w", e)
+		}
+		if program.halt {
+			return nil
 		}
 	}
 }

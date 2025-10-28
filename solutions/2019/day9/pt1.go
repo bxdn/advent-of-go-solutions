@@ -26,7 +26,7 @@ func pt1(input string) (string, error) {
 	out := func (i int) {
 		outs = append(outs, i)
 	}
-	in := func () int {
+	in := func() int {
 		return 1
 	}
 	if e = intcode.Run(ops, in, out); e != nil {

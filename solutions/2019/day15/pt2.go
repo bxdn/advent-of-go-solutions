@@ -1,8 +1,8 @@
 package day15
 
 import (
-	"advent-of-go/solutions/2019/intcode"
 	"advent-of-go/utils"
+	"strconv"
 )
 
 func Pt2() utils.Solution {
@@ -15,6 +15,12 @@ func Pt2() utils.Solution {
 }
 
 func pt2(input string) (string, error) {
-	e := intcode.RunBasicString(input)
-	return "Program run!", e
+	grid, e := dfs(input)
+	unoxygenated := grid.Find(2).OrPanic("Should be 1 oxygen square")
+	steps := bfs(grid, unoxygenated)
+	maxSteps := 0
+	for _, step := range steps {
+		maxSteps = max(maxSteps, step)
+	}
+	return strconv.Itoa(maxSteps), e
 }

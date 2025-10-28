@@ -13,7 +13,11 @@ func (prog *program) mult() {
 }
 
 func (prog *program) in() {
-	prog.set(0, prog.inputFunc())
+	n := prog.inputFunc()
+	if n == HALT_CODE {
+		prog.halt = true
+	}
+	prog.set(0, n)
 }
 
 func (prog *program) out() {

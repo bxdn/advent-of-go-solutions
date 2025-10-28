@@ -44,7 +44,7 @@ func runGame(program []int, grid utils.InfGrid[int]) (int, error) {
 		}
 		count = (count + 1) % 3
 	}
-	in := func () int {
+	in := func() int {
 		paddleX := grid.Find(3).Or(utils.Point{}).X
 		ballX := grid.Find(4).Or(utils.Point{}).X
 		if paddleX < ballX {

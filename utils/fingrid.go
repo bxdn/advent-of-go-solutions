@@ -73,6 +73,14 @@ type Point struct {
 	X, Y int
 }
 
+func (p *Point) Add(other Point) Point {
+	return Point{p.X + other.X, p.Y + other.Y}
+}
+
+func (p *Point) Sub(other Point) Point {
+	return Point{p.X - other.X, p.Y - other.Y}
+}
+
 func (g *FinGrid[T]) Find(item T) Option[Point] {
 	i := slices.Index(g.items, item)
 	if i >= 0 {

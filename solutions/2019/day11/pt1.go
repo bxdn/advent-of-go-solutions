@@ -60,7 +60,7 @@ func runBot(program string, grid utils.InfGrid[color]) {
 		}
 		painting = !painting
 	}
-	in := func () int {
+	in := func() int {
 		return int(grid.At(botX, botY).Or(Black))
 	}
 	intcode.RunString(program, in, out)

@@ -9,6 +9,7 @@ import (
 	"advent-of-go/solutions/2019/day14"
 	"advent-of-go/solutions/2019/day15"
 	"advent-of-go/solutions/2019/day16"
+	"advent-of-go/solutions/2019/day17"
 	"advent-of-go/solutions/2019/day2"
 	"advent-of-go/solutions/2019/day3"
 	"advent-of-go/solutions/2019/day4"
@@ -30,5 +31,6 @@ func Solutions() []utils.Solution {
 		day11.Pt1(), day11.Pt2(), day12.Pt1(), day12.Pt2(),
 		day13.Pt1(), day13.Pt2(), day14.Pt1(), day14.Pt2(),
 		day15.Pt1(), day15.Pt2(), day16.Pt1(), day16.Pt2(),
+		day17.Pt1(),
 	}
 }

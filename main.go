@@ -11,20 +11,38 @@ func main() {
 	y := flag.Int("y", -1, "Year of solutions to display")
 	d := flag.Int("d", -1, "Day of solutions to display")
 	p := flag.Int("p", -1, "Part of solutions to display")
+	t := flag.Bool("t", false, "Use to only test against known answers")
+	q := flag.Bool("q", false, "Use to test in queit mode (only failures logged)")
 
 	flag.Parse()
 
-	for _, solutionSet := range solutions.Solutions() {
-		solutionsToPrint := solutionSet.Solutions
-		if *y != -1 {
-			solutionsToPrint = filter(solutionsToPrint, func(s utils.Solution) bool {return s.Year == *y})
+	solutionsToPrint := solutions.Solutions() 
+
+	if *y != -1 {
+		solutionsToPrint = filter(solutionsToPrint, func(s utils.Solution) bool {return s.Year == *y})
+	}
+	if *d != -1 {
+		solutionsToPrint = filter(solutionsToPrint, func(s utils.Solution) bool {return s.Day == *d})
+	}
+	if *p != -1 {
+		solutionsToPrint = filter(solutionsToPrint, func(s utils.Solution) bool {return s.Part == *p})
+	}
+
+	if *t || *q {
+		passed, failed := 0, 0
+		for _, r := range testSolutions(solutionsToPrint) {
+			if r.err != nil {
+				fmt.Printf("[FAIL] - %s: %v\n", r.solution.Name(), r.err)
+				failed++
+			} else {
+				if (!*q) {
+					fmt.Printf("[PASS] - %s\n", r.solution.Name())
+				}
+				passed++
+			}
 		}
-		if *d != -1 {
-			solutionsToPrint = filter(solutionsToPrint, func(s utils.Solution) bool {return s.Day == *d})
-		}
-		if *p != -1 {
-			solutionsToPrint = filter(solutionsToPrint, func(s utils.Solution) bool {return s.Part == *p})
-		}
+		fmt.Printf("Passed: %d - Failed: %d\n", passed, failed)
+	} else {
 		for _, s := range solutionsToPrint {
 			printSolution(s)
 		}

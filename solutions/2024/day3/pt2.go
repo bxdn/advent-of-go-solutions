@@ -34,7 +34,7 @@ func pt2(input string) (string, error) {
 			return strconv.Itoa(s.total), nil
 		}
 		if e := handleMatch(s, match); e != nil {
-			fmt.Errorf("Error Processingm match: %w", e)
+			return "", fmt.Errorf("error processing match: %w", e)
 		}
 	}
 }
@@ -57,11 +57,11 @@ func handleMatch(s *state, match []int) error {
 		s.active = true
 	default:
 		if len(match) != 6 {
-			return errors.New("Match somehow does not have the right number of groups")
+			return errors.New("match somehow does not have the right number of groups")
 		}
 		prod, e := getProduct(s.input[match[2]:match[3]], s.input[match[4]:match[5]])
 		if e != nil {
-			return fmt.Errorf("Error Parsing mul() command %s: %w", s.input[match[0]:match[1]], e)
+			return fmt.Errorf("error Parsing mul() command %s: %w", s.input[match[0]:match[1]], e)
 		}
 		s.total += prod
 	}

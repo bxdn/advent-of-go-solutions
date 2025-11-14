@@ -17,12 +17,12 @@ func Pt2() utils.Solution {
 }
 
 func pt2(input string) (string, error) {
-	num_strs := strings.Fields(input)
+	numStrs := strings.Fields(input)
 	left, right := map[int]int{}, map[int]int{}
-	for i, str := range num_strs {
+	for i, str := range numStrs {
 		num, e := strconv.Atoi(str)
 		if e != nil {
-			return "", fmt.Errorf("Error Parsing number: %w", e)
+			return "", fmt.Errorf("error Parsing number: %w", e)
 		}
 		if i&1 == 0 {
 			left[num] += 1

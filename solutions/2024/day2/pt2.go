@@ -22,7 +22,7 @@ func pt2(input string) (string, error) {
 	for _, line := range lines {
 		nums, e := utils.StringsToInts(strings.Split(line, " "))
 		if e != nil {
-			return "", fmt.Errorf("Error: Malformed line %s, %w", line, e)
+			return "", fmt.Errorf("error parsing malformed line %s, %w", line, e)
 		}
 		if isLineValidWithFaltTolerance(nums) {
 			total++

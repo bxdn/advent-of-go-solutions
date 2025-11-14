@@ -12,20 +12,20 @@ func main() {
 	d := flag.Int("d", -1, "Day of solutions to display")
 	p := flag.Int("p", -1, "Part of solutions to display")
 	t := flag.Bool("t", false, "Use to only test against known answers")
-	q := flag.Bool("q", false, "Use to test in queit mode (only failures logged)")
+	q := flag.Bool("q", false, "Use to test in quiet mode (only failures logged)")
 
 	flag.Parse()
 
-	solutionsToPrint := solutions.Solutions() 
+	solutionsToPrint := solutions.Solutions()
 
 	if *y != -1 {
-		solutionsToPrint = filter(solutionsToPrint, func(s utils.Solution) bool {return s.Year == *y})
+		solutionsToPrint = filter(solutionsToPrint, func(s utils.Solution) bool { return s.Year == *y })
 	}
 	if *d != -1 {
-		solutionsToPrint = filter(solutionsToPrint, func(s utils.Solution) bool {return s.Day == *d})
+		solutionsToPrint = filter(solutionsToPrint, func(s utils.Solution) bool { return s.Day == *d })
 	}
 	if *p != -1 {
-		solutionsToPrint = filter(solutionsToPrint, func(s utils.Solution) bool {return s.Part == *p})
+		solutionsToPrint = filter(solutionsToPrint, func(s utils.Solution) bool { return s.Part == *p })
 	}
 
 	if *t || *q {
@@ -35,7 +35,7 @@ func main() {
 				fmt.Printf("[FAIL] - %s: %v\n", r.solution.Name(), r.err)
 				failed++
 			} else {
-				if (!*q) {
+				if !*q {
 					fmt.Printf("[PASS] - %s\n", r.solution.Name())
 				}
 				passed++
@@ -61,7 +61,7 @@ func stringifyRes(s string, e error) string {
 }
 
 func filter(sols []utils.Solution, filterFunc func(utils.Solution) bool) []utils.Solution {
-	newSols := []utils.Solution{}
+	var newSols []utils.Solution
 	for _, sol := range sols {
 		if filterFunc(sol) {
 			newSols = append(newSols, sol)

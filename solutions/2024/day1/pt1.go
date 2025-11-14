@@ -18,12 +18,12 @@ func Pt1() utils.Solution {
 }
 
 func pt1(input string) (string, error) {
-	num_strs := strings.Fields(input)
-	leftList, rightList := []int{}, []int{}
-	for i, str := range num_strs {
+	numStrs := strings.Fields(input)
+	var leftList, rightList []int
+	for i, str := range numStrs {
 		num, e := strconv.Atoi(str)
 		if e != nil {
-			return "", fmt.Errorf("Error Parsing number: %w", e)
+			return "", fmt.Errorf("error parsing number: %w", e)
 		}
 		if i&1 == 0 {
 			leftList = append(leftList, num)

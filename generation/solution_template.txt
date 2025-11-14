@@ -1,0 +1,19 @@
+package day{{.Day}}
+
+import (
+	"advent-of-go/utils"
+	"errors"
+)
+
+func Pt{{.Part}}() utils.Solution {
+	return utils.Solution{
+		Year:       {{.Year}},
+		Day:        {{.Day}},
+		Part:       {{.Part}},
+		Calculator: pt{{.Part}},
+	}
+}
+
+func pt{{.Part}}(input string) (string, error) {
+	return "", errors.New("Unimplemented!")
+}

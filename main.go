@@ -1,6 +1,7 @@
 package main
 
 import (
+	"advent-of-go/generation"
 	"advent-of-go/solutions"
 	"advent-of-go/utils"
 	"flag"
@@ -13,11 +14,56 @@ func main() {
 	p := flag.Int("p", -1, "Part of solutions to display")
 	t := flag.Bool("t", false, "Use to only test against known answers")
 	q := flag.Bool("q", false, "Use to test in quiet mode (only failures logged)")
+	g := flag.Bool("g", false, "Use to generate new solution set")
+	i := flag.Bool("i", false, "Use to retrieve input and place it in the correct spot")
 
 	flag.Parse()
 
-	solutionsToPrint := solutions.Solutions()
+	if *g || *i {
+		handleGeneration(g, i, y, d)
+		return
+	}
+	solutionsToPrint := getFilteredSolutions(y, d, p)
+	if *t || *q {
+		handleTesting(solutionsToPrint, q)
+	} else {
+		for _, s := range solutionsToPrint {
+			printSolution(s)
+		}
+	}
+}
 
+func handleTesting(solutions []utils.Solution, q *bool) {
+	passed, failed := 0, 0
+	for _, r := range testSolutions(solutions) {
+		if r.err != nil {
+			fmt.Printf("[FAIL] - %s: %v\n", r.solution.Name(), r.err)
+			failed++
+		} else {
+			if !*q {
+				fmt.Printf("[PASS] - %s\n", r.solution.Name())
+			}
+			passed++
+		}
+	}
+	fmt.Printf("Passed: %d - Failed: %d\n", passed, failed)
+}
+
+func handleGeneration(g, i *bool, y, d *int) {
+	if *y == -1 || *d == -1 {
+		flag.PrintDefaults()
+		return
+	}
+	if *g {
+		utils.Must(generation.Generate(*y, *d))
+	}
+	if *i {
+		utils.Must(generation.Input(*y, *d))
+	}
+}
+
+func getFilteredSolutions(y, d, p *int) []utils.Solution {
+	solutionsToPrint := solutions.Solutions()
 	if *y != -1 {
 		solutionsToPrint = filter(solutionsToPrint, func(s utils.Solution) bool { return s.Year == *y })
 	}
@@ -27,26 +73,7 @@ func main() {
 	if *p != -1 {
 		solutionsToPrint = filter(solutionsToPrint, func(s utils.Solution) bool { return s.Part == *p })
 	}
-
-	if *t || *q {
-		passed, failed := 0, 0
-		for _, r := range testSolutions(solutionsToPrint) {
-			if r.err != nil {
-				fmt.Printf("[FAIL] - %s: %v\n", r.solution.Name(), r.err)
-				failed++
-			} else {
-				if !*q {
-					fmt.Printf("[PASS] - %s\n", r.solution.Name())
-				}
-				passed++
-			}
-		}
-		fmt.Printf("Passed: %d - Failed: %d\n", passed, failed)
-	} else {
-		for _, s := range solutionsToPrint {
-			printSolution(s)
-		}
-	}
+	return solutionsToPrint
 }
 
 func printSolution(s utils.Solution) {

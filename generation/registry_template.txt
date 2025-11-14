@@ -1,0 +1,9 @@
+package y{{.}}
+
+import (
+	"advent-of-go/utils"
+)
+
+func Solutions() []utils.Solution {
+	return []utils.Solution{}
+}

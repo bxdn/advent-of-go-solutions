@@ -99,7 +99,14 @@ func addToSolutionSet(year, day int) error {
 }
 
 func addYearToFunction(d *ast.FuncDecl, year int) {
-
+	callExpr := &ast.CallExpr{
+		Fun: &ast.SelectorExpr{
+			X:   &ast.Ident{Name: fmt.Sprintf("y%d", year)},
+			Sel: &ast.Ident{Name: "Solutions"},
+		},
+	}
+	args := d.Body.List[0].(*ast.ReturnStmt).Results[0].(*ast.CallExpr).Args
+	d.Body.List[0].(*ast.ReturnStmt).Results[0].(*ast.CallExpr).Args = append(args, callExpr)
 }
 
 func addYearImport(d *ast.GenDecl, year int) {

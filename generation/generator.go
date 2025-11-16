@@ -37,7 +37,7 @@ func addSolutionSet(year int) error {
 	fileName := fmt.Sprintf("solutions/%d/solutions.go", year)
 	file, e := os.Create(fileName)
 	if e != nil {
-		fmt.Errorf("error creating solutions file: %w", e)
+		return fmt.Errorf("error creating solutions file: %w", e)
 	}
 	defer file.Close()
 	if e := registryTemplate.Execute(file, year); e != nil {

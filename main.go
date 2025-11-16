@@ -16,11 +16,12 @@ func main() {
 	q := flag.Bool("q", false, "Use to test in quiet mode (only failures logged)")
 	g := flag.Bool("g", false, "Use to generate new solution set")
 	i := flag.Bool("i", false, "Use to retrieve input and place it in the correct spot")
+	a := flag.Bool("a", false, "Use to retrieve answers and place them in the correct spot")
 
 	flag.Parse()
 
-	if *g || *i {
-		handleGeneration(g, i, y, d)
+	if *g || *i || *a {
+		handleGeneration(g, i, a, y, d)
 		return
 	}
 	solutionsToPrint := getFilteredSolutions(y, d, p)
@@ -49,7 +50,7 @@ func handleTesting(solutions []utils.Solution, q *bool) {
 	fmt.Printf("Passed: %d - Failed: %d\n", passed, failed)
 }
 
-func handleGeneration(g, i *bool, y, d *int) {
+func handleGeneration(g, i, a *bool, y, d *int) {
 	if *y == -1 || *d == -1 {
 		flag.PrintDefaults()
 		return
@@ -59,6 +60,9 @@ func handleGeneration(g, i *bool, y, d *int) {
 	}
 	if *i {
 		utils.Must(generation.Input(*y, *d))
+	}
+	if *a {
+		utils.Must(generation.Answers(*y, *d))
 	}
 }
 

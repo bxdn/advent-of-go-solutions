@@ -2,51 +2,44 @@ package main
 
 import (
 	"advent-of-go/utils"
+	"encoding/json"
 	"fmt"
+	"os"
 )
 
 type testResult struct {
 	solution utils.Solution
-	err error
+	err      error
 }
 
 func testSolutions(solutions []utils.Solution) []testResult {
-	answerFileContents := map[int][]string{}
+	answerContents := utils.Unpack(os.ReadFile("private/answers.json"))
+	answers := map[string]map[string][]string{}
+	utils.Must(json.Unmarshal(answerContents, &answers))
 	toRet := make([]testResult, len(solutions))
 	for i, s := range solutions {
-		e := testSolution(s, answerFileContents)
+		e := testSolution(s, answers)
 		toRet[i] = testResult{s, e}
 	}
 	return toRet
 }
 
-func testSolution(solution utils.Solution, answerFileContents map[int][]string) error {
-	answers, found := answerFileContents[solution.Year]
+func testSolution(solution utils.Solution, allAnswers map[string]map[string][]string) error {
+	yearAnswers, found := allAnswers[fmt.Sprintf("%d", solution.Year)]
 	if !found {
-		contents, e := utils.GetFileLines(fmt.Sprintf("private/answers/%d.txt", solution.Year))
-		if e != nil {
-			return fmt.Errorf("Error opening answers file for year %d: %v\n", solution.Year, e)
-		}
-		answerFileContents[solution.Year] = contents
-		answers = contents
+		return fmt.Errorf("error: no answers found for year %d", solution.Year)
 	}
-	answerIdx := (solution.Day - 1) * 2 + solution.Part - 1
-	if answerIdx >= len(answers) {
-		return fmt.Errorf("Error: no answer exists for %s", solution.Name())
+	dayAnswers, found := yearAnswers[fmt.Sprintf("%d", solution.Day)]
+	if !found || len(dayAnswers) < solution.Part {
+		return fmt.Errorf("error: no answers found for year %d day %d part %d", solution.Year, solution.Day, solution.Part)
 	}
-	if e := testSolutionAgainstExpected(solution, answers[answerIdx]); e != nil {
-		return fmt.Errorf("Error testing solutions for %d: %w", solution.Year, e)
-	}
-	return nil
-}
-
-func testSolutionAgainstExpected(sol utils.Solution, expected string) error {
-	result, e := sol.Calculate()
+	result, e := solution.Calculate()
 	if e != nil {
-		return fmt.Errorf("Error in %s: %v", sol.Name(), e)
+		return fmt.Errorf("error in %s: %v", solution.Name(), e)
 	}
+	expected := dayAnswers[solution.Part-1]
 	if result != expected {
-		return fmt.Errorf("Error in %s: expected %s but got %s", sol.Name(), expected, result)
+		return fmt.Errorf("error in %s: expected %s but got %s", solution.Name(), expected, result)
 	}
 	return nil
 }

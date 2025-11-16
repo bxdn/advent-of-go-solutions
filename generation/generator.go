@@ -147,8 +147,11 @@ func addToFunction(d *ast.FuncDecl, day int) {
 
 func createSolutions(year, day int) (bool, error) {
 	dirName := fmt.Sprintf("solutions/%d/day%d", year, day)
-	_, err := os.Stat(fmt.Sprintf("solutions/%d", year))
-	yearDirExists := os.IsExist(err)
+	info, e := os.Stat(fmt.Sprintf("solutions/%d", year))
+	if e != nil && !os.IsNotExist(e) {
+		return false, fmt.Errorf("error checking if year directory exists: %w", e)
+	}
+	yearDirExists := !os.IsNotExist(e) && info.IsDir()
 	if e := os.MkdirAll(dirName, 0777); e != nil {
 		return false, fmt.Errorf("error creating solutions directory: %w", e)
 	}

@@ -7,9 +7,9 @@ import (
 
 func Pt2() utils.Solution {
 	return utils.Solution{
-		Year: 2019, 
-		Day: 11,
-		Part: 2,
+		Year:       2019,
+		Day:        11,
+		Part:       2,
 		Calculator: pt2,
 	}
 }
@@ -20,7 +20,11 @@ func pt2(input string) (string, error) {
 	runBot(input, grid)
 	finGrid, e := grid.ToFinGrid()
 	if e != nil {
-		return "", fmt.Errorf("Error converting infinite grid to finite grid for image processing: %w", e)
+		return "", fmt.Errorf("error converting infinite grid to finite grid for image processing: %w", e)
 	}
-	return utils.GridToPngString(finGrid)
+	base64Str, e := utils.GridToPng(finGrid)
+	if e != nil {
+		return "", fmt.Errorf("error creating image string: %w", e)
+	}
+	return utils.DetectText(base64Str)
 }

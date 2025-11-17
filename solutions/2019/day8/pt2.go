@@ -7,9 +7,9 @@ import (
 
 func Pt2() utils.Solution {
 	return utils.Solution{
-		Year: 2019, 
-		Day: 8,
-		Part: 2,
+		Year:       2019,
+		Day:        8,
+		Part:       2,
 		Calculator: pt2,
 	}
 }
@@ -30,9 +30,9 @@ func pt2(input string) (string, error) {
 		}
 	}
 	grid := utils.GridFromSlice(scores, 25)
-	imgStr, e := utils.GridToPngString(grid)
+	base64Str, e := utils.GridToPng(grid)
 	if e != nil {
-		return "", fmt.Errorf("Error creating image string: %w", e)
+		return "", fmt.Errorf("error creating image string: %w", e)
 	}
-	return imgStr, nil
+	return utils.DetectText(base64Str)
 }

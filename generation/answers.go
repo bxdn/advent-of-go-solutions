@@ -6,36 +6,26 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"time"
 )
 
 func Answers(year, day int) error {
 	url := fmt.Sprintf("https://adventofcode.com/%d/day/%d", year, day)
-	req, e := http.NewRequest(http.MethodGet, url, nil)
+	res, e := prepareRequest(http.MethodGet, url, nil, false)
 	if e != nil {
-		return fmt.Errorf("error creating request: %w", e)
-	}
-	cookieContents, e := utils.GetFileContents("private/cookie.txt")
-	if e != nil {
-		return fmt.Errorf("error reading cookie file: %w", e)
-	}
-	c := http.Cookie{Domain: "adventofcode.com", Path: "/", Value: cookieContents, Name: "session"}
-	req.AddCookie(&c)
-	req.Header.Add("User-Agent", "github.com/bxdn/advent-of-go by @bxdn")
-	res, e := (&http.Client{Timeout: 5 * time.Second}).Do(req)
-	if e != nil {
-		return fmt.Errorf("error sending request: %w", e)
-	}
-	if res.StatusCode != 200 {
-		return fmt.Errorf("bad status code: %d", res.StatusCode)
+		return fmt.Errorf("error creating/sending request: %w", e)
 	}
 	defer res.Body.Close()
-
-	answers, e := ArticleParagraphCodes(res.Body)
-	if e != nil || len(answers) != 2 {
+	answers, e := articleParagraphCodes(res.Body)
+	if e != nil {
 		return fmt.Errorf("error extracting answers: %w", e)
 	}
+	if len(answers) > 2 {
+		return fmt.Errorf("error: more than 2 answers found for year %d day %d, this should not be possible, perhaps the html of the site changed?", year, day)
+	}
+	return saveAnswers(year, day, answers)
+}
 
+func saveAnswers(year, day int, answers []string) error {
 	var answersInFile map[string]any
 	if e := json.Unmarshal(utils.Unpack(os.ReadFile("private/answers.json")), &answersInFile); e != nil {
 		return fmt.Errorf("error unmarshaling answers file: %w", e)

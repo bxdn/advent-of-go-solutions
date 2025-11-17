@@ -9,5 +9,5 @@ import (
 )
 
 func Solutions() []utils.Solution {
-	return slices.Concat(y2019.Solutions(), y2023.Solutions(), y2024.Solutions())
+	return slices.Concat[[]utils.Solution](y2019.Solutions(), y2023.Solutions(), y2024.Solutions())
 }

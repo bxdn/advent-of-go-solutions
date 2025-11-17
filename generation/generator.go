@@ -15,8 +15,11 @@ var fileTemplate = utils.Unpack(template.ParseFiles("generation/solution_templat
 var registryTemplate = utils.Unpack(template.ParseFiles("generation/registry_template.txt"))
 
 func Generate(year, day int) error {
-	yearDirExists, e := createSolutions(year, day)
+	yearDirExists, e := doesYearDirExist(year)
 	if e != nil {
+		return fmt.Errorf("error checking if year directory exists: %w", e)
+	}
+	if e := createSolutions(year, day); e != nil {
 		return fmt.Errorf("error creating solutions: %w", e)
 	}
 	if !yearDirExists {
@@ -145,33 +148,42 @@ func addToFunction(d *ast.FuncDecl, day int) {
 	d.Body.List[0].(*ast.ReturnStmt).Results[0].(*ast.CompositeLit).Elts = append(els, callExpr1, callExpr2)
 }
 
-func createSolutions(year, day int) (bool, error) {
-	dirName := fmt.Sprintf("solutions/%d/day%d", year, day)
-	info, e := os.Stat(fmt.Sprintf("solutions/%d", year))
+func doesYearDirExist(year int) (bool, error) {
+	_, e := os.Stat(fmt.Sprintf("solutions/%d", year))
 	if e != nil && !os.IsNotExist(e) {
 		return false, fmt.Errorf("error checking if year directory exists: %w", e)
 	}
-	yearDirExists := !os.IsNotExist(e) && info.IsDir()
-	if e := os.MkdirAll(dirName, 0777); e != nil {
-		return false, fmt.Errorf("error creating solutions directory: %w", e)
+	return !os.IsNotExist(e), nil
+}
+
+func createSolutions(year, day int) error {
+	dirName := fmt.Sprintf("solutions/%d/day%d", year, day)
+	if _, e := os.Stat(dirName); e == nil {
+		return fmt.Errorf("solution already exists for year %d day %d", year, day)
+	} else if !os.IsNotExist(e) {
+		return fmt.Errorf("error checking if solution directory exists: %w", e)
 	}
-	pt1File, e := os.Create(fmt.Sprintf("%s/pt1.go", dirName))
+	if e := os.MkdirAll(dirName, 0777); e != nil {
+		return fmt.Errorf("error creating solutions directory: %w", e)
+	}
+	if e := createSolutionFile(year, day, 1); e != nil {
+		return fmt.Errorf("error creating part 1 solution file: %w", e)
+	}
+	if e := createSolutionFile(year, day, 2); e != nil {
+		return fmt.Errorf("error creating part 2 solution file: %w", e)
+	}
+	return nil
+}
+
+func createSolutionFile(year, day, part int) error {
+	pt1File, e := os.Create(fmt.Sprintf("solutions/%d/day%d/pt%d.go", year, day, part))
 	if e != nil {
-		return yearDirExists, fmt.Errorf("error creating pt1 file: %w", e)
+		return fmt.Errorf("error creating pt1 file: %w", e)
 	}
 	defer pt1File.Close()
-	pt2File, e := os.Create(fmt.Sprintf("%s/pt2.go", dirName))
-	if e != nil {
-		return yearDirExists, fmt.Errorf("error creating pt2 file: %w", e)
-	}
-	defer pt2File.Close()
-	pt1Sol := utils.Solution{Year: year, Day: day, Part: 1}
+	pt1Sol := utils.Solution{Year: year, Day: day, Part: part}
 	if e := fileTemplate.Execute(pt1File, pt1Sol); e != nil {
-		return yearDirExists, fmt.Errorf("error executing template for part 1: %w", e)
+		return fmt.Errorf("error executing template for part 1: %w", e)
 	}
-	pt2Sol := utils.Solution{Year: year, Day: day, Part: 2}
-	if e := fileTemplate.Execute(pt2File, pt2Sol); e != nil {
-		return yearDirExists, fmt.Errorf("error executing template for part 2: %w", e)
-	}
-	return yearDirExists, nil
+	return nil
 }

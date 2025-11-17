@@ -1,19 +1,31 @@
 package generation
 
 import (
-	"bytes"
 	"io"
 	"strings"
 
 	"golang.org/x/net/html"
 )
 
-func innerHTML(n *html.Node) (string, error) {
-	var buf bytes.Buffer
-	if e := html.Render(&buf, n.FirstChild); e != nil {
-		return "", e
+func extractText(n *html.Node) (string, error) {
+	var b strings.Builder
+	var f func(*html.Node) error
+	f = func(n *html.Node) error {
+		if n.Type == html.TextNode {
+			_, e := b.WriteString(n.Data)
+			if e != nil {
+				return e
+			}
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			if e := f(c); e != nil {
+				return e
+			}
+		}
+		return nil
 	}
-	return buf.String(), nil
+	f(n)
+	return strings.TrimSpace(b.String()), nil
 }
 
 func nextElementSibling(n *html.Node) *html.Node {
@@ -25,7 +37,7 @@ func nextElementSibling(n *html.Node) *html.Node {
 	return nil
 }
 
-func ArticleParagraphCodes(r io.Reader) ([]string, error) {
+func articleParagraphCodes(r io.Reader) ([]string, error) {
 	doc, e := html.Parse(r)
 	if e != nil {
 		return nil, e
@@ -38,11 +50,11 @@ func ArticleParagraphCodes(r io.Reader) ([]string, error) {
 		if potentialCode == nil || potentialCode.Data != "code" {
 			return nil
 		}
-		innerHtml, e := innerHTML(potentialCode)
+		answer := potentialCode.FirstChild.Data
 		if e != nil {
 			return e
 		}
-		results = append(results, strings.TrimSpace(innerHtml))
+		results = append(results, strings.TrimSpace(answer))
 		return nil
 	}
 
@@ -64,4 +76,28 @@ func ArticleParagraphCodes(r io.Reader) ([]string, error) {
 
 	e = walk(doc)
 	return results, e
+}
+
+func articleParagraphText(r io.Reader) (string, error) {
+	doc, e := html.Parse(r)
+	if e != nil {
+		return "", e
+	}
+
+	var walk func(*html.Node) (string, error)
+	walk = func(n *html.Node) (string, error) {
+		if n.Type == html.ElementNode && n.Data == "article" {
+			return extractText(n.FirstChild)
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			if s, e := walk(c); e != nil {
+				return "", e
+			} else if s != "" {
+				return s, nil
+			}
+		}
+		return "", nil
+	}
+
+	return walk(doc)
 }

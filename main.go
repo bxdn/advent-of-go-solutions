@@ -14,24 +14,50 @@ func main() {
 	p := flag.Int("p", -1, "Part of solutions to display")
 	t := flag.Bool("t", false, "Use to only test against known answers")
 	q := flag.Bool("q", false, "Use to test in quiet mode (only failures logged)")
-	g := flag.Bool("g", false, "Use to generate new solution set")
-	i := flag.Bool("i", false, "Use to retrieve input and place it in the correct spot")
-	a := flag.Bool("a", false, "Use to retrieve answers and place them in the correct spot")
+	g := flag.Bool("g", false, "Use to generate new solution set, needs year and day flags to work")
+	i := flag.Bool("i", false, "Use to retrieve input and place it in the correct spot, needs year and day flags to work")
+	a := flag.Bool("a", false, "Use to retrieve answers and place them in the correct spot, needs year and day flags to work")
+	s := flag.Bool("s", false, "Use to submit a solution, needs year, day and part flags to work")
 
 	flag.Parse()
+
+	if e := runInit(); e != nil {
+		fmt.Printf("Error initializing: %v\n", e)
+		return
+	}
 
 	if *g || *i || *a {
 		handleGeneration(g, i, a, y, d)
 		return
 	}
-	solutionsToPrint := getFilteredSolutions(y, d, p)
-	if *t || *q {
-		handleTesting(solutionsToPrint, q)
+	filteredSolutions := getFilteredSolutions(y, d, p)
+	if *s {
+		handleSubmission(y, d, p, filteredSolutions)
+	} else if *t || *q {
+		handleTesting(filteredSolutions, q)
 	} else {
-		for _, s := range solutionsToPrint {
+		for _, s := range filteredSolutions {
 			printSolution(s)
 		}
 	}
+}
+
+func handleSubmission(y, d, p *int, solutions []utils.Solution) {
+	if *y == -1 || *d == -1 || *p == -1 {
+		flag.PrintDefaults()
+		return
+	}
+	if len(solutions) != 1 {
+		fmt.Printf("Error: expected exactly one solution to submit, but found %d\n", len(solutions))
+		return
+	}
+	solution := solutions[0]
+	msg, e := generation.Submit(*y, *d, *p, solution)
+	if e != nil {
+		fmt.Printf("Error submitting solution: %v\n", e)
+		return
+	}
+	fmt.Printf("%s Response: %s\n", solution.Name(), msg)
 }
 
 func handleTesting(solutions []utils.Solution, q *bool) {
@@ -56,13 +82,19 @@ func handleGeneration(g, i, a *bool, y, d *int) {
 		return
 	}
 	if *g {
-		utils.Must(generation.Generate(*y, *d))
+		if e := generation.Generate(*y, *d); e != nil {
+			fmt.Printf("Error generating solution: %v\n", e)
+		}
 	}
 	if *i {
-		utils.Must(generation.Input(*y, *d))
+		if e := generation.Input(*y, *d); e != nil {
+			fmt.Printf("Error retrieving input: %v\n", e)
+		}
 	}
 	if *a {
-		utils.Must(generation.Answers(*y, *d))
+		if e := generation.Answers(*y, *d); e != nil {
+			fmt.Printf("Error retrieving answers: %v\n", e)
+		}
 	}
 }
 

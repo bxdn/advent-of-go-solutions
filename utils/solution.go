@@ -6,7 +6,7 @@ type Calculator func(string) (string, error)
 
 type Solution struct {
 	Year, Day, Part int
-	Calculator Calculator
+	Calculator      Calculator
 }
 
 func (s Solution) Name() string {
@@ -17,7 +17,7 @@ func (s Solution) Calculate() (string, error) {
 	inputPath := fmt.Sprintf("private/inputs/%d/day%d.txt", s.Year, s.Day)
 	contents, e := GetFileContents(inputPath)
 	if e != nil {
-		return "", fmt.Errorf("Error getting contents of input file for %s: %w", s.Name(), e)
+		return "", fmt.Errorf("error getting contents of input file for %s: %w", s.Name(), e)
 	}
 	return s.Calculator(contents)
 }

@@ -19,6 +19,12 @@ func Submit(year, day, part int, solution utils.Solution) (string, error) {
 		return "", fmt.Errorf("error creating/sending request: %w", e)
 	}
 	defer res.Body.Close()
+	if res.StatusCode != http.StatusOK {
+		if res.StatusCode == http.StatusNotFound {
+			return "", fmt.Errorf("error: submission not found for year %d day %d, perhaps the day has not been released yet?", year, day)
+		}
+		return "", fmt.Errorf("error: bad status code: %d", res.StatusCode)
+	}
 	msg, e := articleParagraphText(res.Body)
 	if e != nil {
 		return "", fmt.Errorf("error processing response body: %w", e)

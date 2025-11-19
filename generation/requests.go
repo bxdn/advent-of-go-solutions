@@ -27,8 +27,5 @@ func prepareRequest(method string, url string, body io.Reader, isForm bool) (*ht
 	if e != nil {
 		return nil, fmt.Errorf("error sending request: %w", e)
 	}
-	if res.StatusCode != 200 {
-		return nil, fmt.Errorf("error: bad status code: %d", res.StatusCode)
-	}
 	return res, nil
 }

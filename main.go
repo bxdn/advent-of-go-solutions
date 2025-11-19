@@ -47,7 +47,9 @@ func main() {
 		return
 	}
 
-	handleInput(filteredSolutions)
+	if ok := generation.AllInput(solutions); !ok {
+		fmt.Printf("Finished pulling input with errors!\n")
+	}
 
 	// standard print command if no other flags are set
 	if !*s && !*t && !*q {
@@ -97,11 +99,12 @@ func handleSubmission(y, d, p *int, solutions []utils.Solution) {
 }
 
 func handleTesting(solutions []utils.Solution, q *bool) {
-	if ok := handleAnswers(solutions); !ok {
-		fmt.Printf("Error retrieving answers, cannot run tests!\n")
+	if ok, e := generation.AllAnswers(solutions); e != nil {
+		fmt.Printf("Error retrieving answers: %v\n", e)
 		return
+	} else if !ok {
+		fmt.Printf("Finished pulling answers with errors!\n")
 	}
-	fmt.Println("Results:")
 	passed, failed := 0, 0
 	for _, r := range testSolutions(solutions) {
 		if r.err != nil {
@@ -127,26 +130,6 @@ func handleGeneration(y, d *int) {
 		}
 		fmt.Printf("Successfully generated solution for year %d day %d\n", *y, *d)
 	}
-}
-
-func handleInput(solutions []utils.Solution) {
-	if ok := generation.AllInput(solutions); !ok {
-		fmt.Printf("Finished pulling input with errors!\n")
-	} else {
-		fmt.Printf("Successfully retrieved input!\n")
-	}
-}
-
-func handleAnswers(solutions []utils.Solution) bool {
-	if ok, e := generation.AllAnswers(solutions); e != nil {
-		fmt.Printf("Error retrieving answers: %v\n", e)
-		return false
-	} else if !ok {
-		fmt.Printf("Finished pulling answers with errors!\n")
-	} else {
-		fmt.Printf("Successfully retrieved answers!\n")
-	}
-	return true
 }
 
 func getFilteredSolutions(solutions []utils.Solution, y, d, p *int) []utils.Solution {

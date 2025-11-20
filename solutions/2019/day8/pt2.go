@@ -30,9 +30,9 @@ func pt2(input string) (string, error) {
 		}
 	}
 	grid := utils.GridFromSlice(scores, 25)
-	base64Str, e := utils.GridToPng(grid)
+	png, e := utils.GridToPng(grid)
 	if e != nil {
 		return "", fmt.Errorf("error creating image string: %w", e)
 	}
-	return utils.DetectText(base64Str)
+	return utils.DetectText(png)
 }

@@ -22,9 +22,9 @@ func pt2(input string) (string, error) {
 	if e != nil {
 		return "", fmt.Errorf("error converting infinite grid to finite grid for image processing: %w", e)
 	}
-	base64Str, e := utils.GridToPng(finGrid)
+	png, e := utils.GridToPng(finGrid)
 	if e != nil {
 		return "", fmt.Errorf("error creating image string: %w", e)
 	}
-	return utils.DetectText(base64Str)
+	return utils.DetectText(png)
 }

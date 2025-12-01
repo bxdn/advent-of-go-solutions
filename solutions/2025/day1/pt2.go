@@ -23,16 +23,11 @@ func pt2(input string) (string, error) {
 		if e != nil {
 			return "", fmt.Errorf("error parsing line: %w", e)
 		}
-		prev := pos
-		pos += offset
-		if pos <= 0 {
-			total += -pos / 100
-			if prev != 0 {
-				total++
-			}
-		} else {
-			total += pos / 100
+		if pos+offset <= 0 && pos != 0 {
+			total++
 		}
+		pos += offset
+		total += utils.Abs(pos) / 100
 		pos = ((pos % 100) + 100) % 100
 	}
 	return strconv.Itoa(total), nil

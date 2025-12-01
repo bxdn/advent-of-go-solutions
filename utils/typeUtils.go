@@ -32,10 +32,3 @@ func StringsToInts(strings []string) ([]int, error) {
 	}
 	return nums, nil
 }
-
-func Abs(input int) int {
-	if input < 0 {
-		return -input
-	}
-	return input
-}

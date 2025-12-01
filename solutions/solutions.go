@@ -7,8 +7,9 @@ import (
 	"advent-of-go/utils"
 	"slices"
 	y2015 "advent-of-go/solutions/2015"
+	y2025 "advent-of-go/solutions/2025"
 )
 
 func Solutions() []utils.Solution {
-	return slices.Concat[[]utils.Solution](y2019.Solutions(), y2023.Solutions(), y2024.Solutions(), y2015.Solutions())
+	return slices.Concat[[]utils.Solution](y2019.Solutions(), y2023.Solutions(), y2024.Solutions(), y2015.Solutions(), y2025.Solutions())
 }

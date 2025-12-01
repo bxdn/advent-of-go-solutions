@@ -39,11 +39,8 @@ func getLineOffset(line string) (int, error) {
 	case 'R':
 		return strconv.Atoi(line[1:])
 	case 'L':
-		if n, e := strconv.Atoi(line[1:]); e != nil {
-			return 0, fmt.Errorf("error parsing number: %w", e)
-		} else {
-			return -n, nil
-		}
+		n, e := strconv.Atoi(line[1:])
+		return -n, e
 	default:
 		return 0, fmt.Errorf("error: malformed line: unknown direction found in line: %s", line)
 	}

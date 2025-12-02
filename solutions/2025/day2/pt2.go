@@ -3,7 +3,6 @@ package day2
 import (
 	"advent-of-go/utils"
 	"fmt"
-	"slices"
 	"strconv"
 	"strings"
 )
@@ -30,7 +29,7 @@ func pt2(input string) (string, error) {
 }
 
 func pt2Val(n int) bool {
-	digits := utils.Digits(n)
-	doubled := slices.Concat(digits, digits)
-	return utils.ContainsSubslice(doubled[1:len(doubled)-1], digits)
+	s := strconv.Itoa(n)
+	doubled := s + s
+	return strings.Contains(doubled[1:len(doubled)-1], s)
 }

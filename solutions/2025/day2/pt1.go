@@ -3,7 +3,6 @@ package day2
 import (
 	"advent-of-go/utils"
 	"fmt"
-	"slices"
 	"strconv"
 	"strings"
 )
@@ -45,7 +44,7 @@ func processRange(rang string, validator func(int) bool) (int, error) {
 }
 
 func pt1Val(n int) bool {
-	digits := utils.Digits(n)
-	subLength := len(digits) / 2
-	return slices.Equal(digits[:subLength], digits[subLength:])
+	s := strconv.Itoa(n)
+	subLength := len(s) / 2
+	return s[:subLength] == s[subLength:]
 }

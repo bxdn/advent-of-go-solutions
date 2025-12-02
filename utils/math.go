@@ -24,3 +24,18 @@ func Abs(x int) int {
 	}
 	return x
 }
+
+func Digits(n int) []int {
+	if n == 0 {
+		return []int{0}
+	}
+	var digits []int
+	for n > 0 {
+		digits = append(digits, n%10)
+		n /= 10
+	}
+	for i, j := 0, len(digits)-1; i < j; i, j = i+1, j-1 {
+		digits[i], digits[j] = digits[j], digits[i]
+	}
+	return digits
+}

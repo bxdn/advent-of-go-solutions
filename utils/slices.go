@@ -54,3 +54,36 @@ func Rev[T any](slice []T) []T {
 	}
 	return toRet
 }
+
+func ContainsSubslice[T comparable](s, sub []T) bool {
+	if len(sub) == 0 {
+		return false
+	}
+	if len(sub) > len(s) {
+		return false
+	}
+
+	pi := make([]int, len(sub))
+	for i, j := 1, 0; i < len(sub); i++ {
+		for j > 0 && sub[i] != sub[j] {
+			j = pi[j-1]
+		}
+		if sub[i] == sub[j] {
+			j++
+		}
+		pi[i] = j
+	}
+
+	for i, j := 0, 0; i < len(s); i++ {
+		for j > 0 && s[i] != sub[j] {
+			j = pi[j-1]
+		}
+		if s[i] == sub[j] {
+			j++
+		}
+		if j == len(sub) {
+			return true
+		}
+	}
+	return false
+}

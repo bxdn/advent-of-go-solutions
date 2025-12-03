@@ -24,3 +24,11 @@ func Abs(x int) int {
 	}
 	return x
 }
+
+func Pow(x, y int) int {
+	res := 1
+	for range y {
+		res *= x
+	}
+	return res
+}

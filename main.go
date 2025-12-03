@@ -18,6 +18,7 @@ func main() {
 	g := flag.Bool("g", false, "Use to generate new solution set, needs year and day flags to work")
 	s := flag.Bool("s", false, "Use to submit a solution, needs year, day and part flags to work")
 	n := flag.Bool("n", false, "Use to use the current day and year for the year and day flags (only works in December)")
+	b := flag.Bool("b", false, "Use to show the runtime benchmark for displayed solutions")
 
 	flag.Parse()
 
@@ -54,7 +55,7 @@ func main() {
 	// standard print command if no other flags are set
 	if !*s && !*t && !*q {
 		for _, s := range filteredSolutions {
-			printSolutionResults(s)
+			printSolutionResults(s, b)
 		}
 		return
 	}
@@ -63,7 +64,7 @@ func main() {
 		handleSubmission(y, d, p, filteredSolutions)
 	}
 	if *t || *q {
-		handleTesting(filteredSolutions, q)
+		handleTesting(filteredSolutions, q, b)
 	}
 }
 
@@ -98,7 +99,7 @@ func handleSubmission(y, d, p *int, solutions []utils.Solution) {
 	fmt.Printf("%s Response: %s\n", solution.Name(), msg)
 }
 
-func handleTesting(solutions []utils.Solution, q *bool) {
+func handleTesting(solutions []utils.Solution, q *bool, b *bool) {
 	if ok, e := generation.AllAnswers(solutions); e != nil {
 		fmt.Printf("Error retrieving answers: %v\n", e)
 		return
@@ -112,7 +113,11 @@ func handleTesting(solutions []utils.Solution, q *bool) {
 			failed++
 		} else {
 			if !*q {
-				fmt.Printf("[PASS] - %s\n", r.solution.Name())
+				msg := fmt.Sprintf("[PASS] - %s", r.solution.Name())
+				if *b {
+					msg += fmt.Sprintf(" - %s", r.bench)
+				}
+				fmt.Println(msg)
 			}
 			passed++
 		}
@@ -145,15 +150,19 @@ func getFilteredSolutions(solutions []utils.Solution, y, d, p *int) []utils.Solu
 	return solutions
 }
 
-func printSolutionResults(s utils.Solution) {
-	fmt.Printf("%s: %s\n", s.Name(), stringifyRes(s.Calculate()))
+func printSolutionResults(s utils.Solution, b *bool) {
+	answer, bench, e := s.Calculate()
+	fmt.Printf("%s: %s\n", s.Name(), stringifyRes(*b, answer, bench, e))
 }
 
-func stringifyRes(s string, e error) string {
+func stringifyRes(benchmark bool, answer string, bench string, e error) string {
 	if e != nil {
 		return fmt.Sprintf("Error: %+v", e)
 	}
-	return s
+	if benchmark {
+		answer += fmt.Sprintf(" - %s", bench)
+	}
+	return answer
 }
 
 func filter(sols []utils.Solution, filterFunc func(utils.Solution) bool) []utils.Solution {

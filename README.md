@@ -36,6 +36,10 @@ If you, for instance, wanted to print only year 2019 day 5 part 2, you could run
 
 Inputs will also be pulled in for each solution as needed.
 
+Additionally, you can see the runtime of your selected solutions by using the `-b` flag.
+
+So, you could run `go run . -n -b` to print the solutions for today's puzzles + their runtimes.
+
 ### Submitting
 To submit a solution after implementation, use the `-s` flag. You will need the `-y`, `-d`, and `-p` flags to specify a solution to submit. 
 
@@ -53,3 +57,5 @@ So, if you wanted to test only 2023's solutions in quiet mode, you could run `go
 The tests will of course only pass if you have previously submitted the answers for those solutions.
 
 The answers will be pulled in automatically as needed for testing.
+
+Additionally, the `-b` flag works with `-t` as well to benchmark all your tests.

@@ -9,7 +9,7 @@ import (
 
 func Submit(year, day, part int, solution utils.Solution) (string, error) {
 	url := fmt.Sprintf("https://adventofcode.com/%d/day/%d/answer", year, day)
-	answer, e := solution.Calculate()
+	answer, _, e := solution.Calculate()
 	if e != nil {
 		return "", fmt.Errorf("error calculating solution: %w", e)
 	}

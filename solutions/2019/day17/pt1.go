@@ -10,9 +10,9 @@ import (
 
 func Pt1() utils.Solution {
 	return utils.Solution{
-		Year: 2019, 
-		Day: 17,
-		Part: 1,
+		Year:       2019,
+		Day:        17,
+		Part:       1,
 		Calculator: pt1,
 	}
 }
@@ -48,9 +48,8 @@ func getTotal(grid utils.FinGrid[rune]) int {
 	total := 0
 	for _, p := range scaffoldPoints {
 		adjScaff := 0
-		for _, offset := range OFFSETS {
-			adj := p.Add(offset)
-			if grid.At(adj.X, adj.Y).Or('.') == '#' {
+		for char := range grid.Adj(p) {
+			if char.Is('#') {
 				adjScaff++
 			}
 		}

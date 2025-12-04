@@ -62,3 +62,19 @@ func FlatMapO[T, U any](o Option[T], f func(T) Option[U]) Option[U] {
 	}
 	return None[U]()
 }
+
+type CmpOption[T comparable] struct {
+	Option[T]
+}
+
+func (co CmpOption[T]) Is(check T) bool {
+	return co.hasValue && co.value == check
+}
+
+func CSome[T comparable](t T) CmpOption[T] {
+	return CmpOption[T]{Some(t)}
+}
+
+func CNone[T comparable]() CmpOption[T] {
+	return CmpOption[T]{None[T]()}
+}

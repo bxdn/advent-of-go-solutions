@@ -7,8 +7,8 @@ import (
 )
 
 type FinGrid[T comparable] struct {
-	items []T
-	width int
+	items  []T
+	width  int
 	height int
 }
 
@@ -18,7 +18,7 @@ func GridFromString(s string) FinGrid[rune] {
 
 func GridFromSlice[T comparable](s []T, width int) FinGrid[T] {
 	height := len(s) / width
-	if len(s) % width != 0 {
+	if len(s)%width != 0 {
 		height++
 	}
 	return FinGrid[T]{s, width, height}
@@ -46,26 +46,49 @@ func (g *FinGrid[T]) Dims() (int, int) {
 	return g.width, g.height
 }
 
-func (g *FinGrid[T]) At(x int, y int) Option[T] {
-	if x < 0 || y < 0 {
-		return None[T]()
+func (g *FinGrid[T]) At(x int, y int) CmpOption[T] {
+	if x < 0 || y < 0 || x >= g.width || y >= g.height {
+		return CNone[T]()
 	}
 	idx := y*g.width + x
-	if idx > len(g.items) {
-		return None[T]()
+	if idx >= len(g.items) {
+		return CNone[T]()
 	}
-	return Some(g.items[idx])
+	return CSome(g.items[idx])
 }
 
 func (g *FinGrid[T]) Set(x, y int, value T) error {
-	if x < 0 || y < 0 {
-		return errors.New("Coordinates out of bounds!")
+	if x < 0 || y < 0 || x >= g.width || y >= g.height {
+		return errors.New("coordinates out of bounds")
 	}
 	idx := y*g.width + x
-	if idx > len(g.items) {
-		return errors.New("Coordinates out of bounds!")
+	if idx >= len(g.items) {
+		return errors.New("cordinates out of bounds")
 	}
-	g.items[y*g.width + x] = value
+	g.items[idx] = value
+	return nil
+}
+
+func (g *FinGrid[T]) AtP(p Point) CmpOption[T] {
+	if p.X < 0 || p.Y < 0 || p.X >= g.width || p.Y >= g.height {
+		return CNone[T]()
+	}
+	idx := p.Y*g.width + p.X
+	if idx >= len(g.items) {
+		return CNone[T]()
+	}
+	return CSome(g.items[idx])
+}
+
+func (g *FinGrid[T]) SetP(p Point, value T) error {
+	if p.X < 0 || p.Y < 0 || p.X >= g.width || p.Y >= g.height {
+		return errors.New("cordinates out of bounds")
+	}
+	idx := p.Y*g.width + p.X
+	if idx >= len(g.items) {
+		return errors.New("cordinates out of bounds")
+	}
+	g.items[idx] = value
 	return nil
 }
 
@@ -81,12 +104,12 @@ func (p *Point) Sub(other Point) Point {
 	return Point{p.X - other.X, p.Y - other.Y}
 }
 
-func (g *FinGrid[T]) Find(item T) Option[Point] {
+func (g *FinGrid[T]) Find(item T) CmpOption[Point] {
 	i := slices.Index(g.items, item)
 	if i >= 0 {
-		return Some(Point{i % g.width, i / g.width})
+		return CSome(Point{i % g.width, i / g.width})
 	}
-	return None[Point]()
+	return CNone[Point]()
 }
 
 func (g *FinGrid[T]) FindAll(item T) []Point {
@@ -99,9 +122,45 @@ func (g *FinGrid[T]) FindAll(item T) []Point {
 	return all
 }
 
+func (g *FinGrid[T]) Points() func(func(Point) bool) {
+	return func(yield func(Point) bool) {
+		for y := range g.height {
+			for x := range g.width {
+				if !yield(Point{x, y}) {
+					return
+				}
+			}
+		}
+	}
+}
+
+var adjOffsets = [4]Point{{-1, 0}, {1, 0}, {0, 1}, {0, -1}}
+
+var adjCOffsets = [8]Point{{-1, -1}, {-1, 1}, {-1, 0}, {1, -1}, {1, 1}, {1, 0}, {0, 1}, {0, -1}}
+
+func (g *FinGrid[T]) Adj(p Point) func(func(CmpOption[T]) bool) {
+	return func(yield func(CmpOption[T]) bool) {
+		for _, off := range adjOffsets {
+			if !yield(g.AtP(p.Add(off))) {
+				return
+			}
+		}
+	}
+}
+
+func (g *FinGrid[T]) AdjC(p Point) func(func(CmpOption[T]) bool) {
+	return func(yield func(CmpOption[T]) bool) {
+		for _, off := range adjCOffsets {
+			if !yield(g.AtP(p.Add(off))) {
+				return
+			}
+		}
+	}
+}
+
 func PrintGrid(g FinGrid[rune]) {
 	for i, char := range g.items {
-		if i % g.width == 0 {
+		if i%g.width == 0 {
 			fmt.Print("\n")
 		}
 		fmt.Printf("%c", char)

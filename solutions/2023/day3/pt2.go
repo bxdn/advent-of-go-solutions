@@ -11,9 +11,9 @@ var starRegex = regexp.MustCompile(`\*`)
 
 func Pt2() utils.Solution {
 	return utils.Solution{
-		Year: 2023, 
-		Day: 3,
-		Part: 2,
+		Year:       2023,
+		Day:        3,
+		Part:       2,
 		Calculator: pt2,
 	}
 }
@@ -33,7 +33,7 @@ func pt2(input string) (string, error) {
 		}
 		total += num
 	}
-	
+
 	return strconv.Itoa(total), nil
 }
 
@@ -50,7 +50,7 @@ func initializeNumGrid(lines []string) (utils.FinGrid[numWithPos], error) {
 
 	grid := utils.BlankGrid[numWithPos](width, height)
 	for _, num := range nums {
-		for x := num.x; x < num.x + len(num.numString); x++ {
+		for x := num.x; x < num.x+len(num.numString); x++ {
 			if e := grid.Set(x, num.y, num); e != nil {
 				return grid, fmt.Errorf("Error setting the num at the position: %w", e)
 			}
@@ -66,7 +66,7 @@ func getLineTotal(y int, line string, grid utils.FinGrid[numWithPos]) (int, erro
 		ratio, e := getTotalForNumMap(getNumMapForGear(match[0], y, grid))
 		if e != nil {
 			return 0, fmt.Errorf("Error getting the total for gear ratio: %w", e)
-		} 
+		}
 		total += ratio
 	}
 	return total, nil
@@ -74,12 +74,10 @@ func getLineTotal(y int, line string, grid utils.FinGrid[numWithPos]) (int, erro
 
 func getNumMapForGear(x, y int, grid utils.FinGrid[numWithPos]) map[numWithPos]string {
 	nums := map[numWithPos]string{}
-	for xOffset := -1; xOffset <= 1; xOffset++ {
-		for yOffset := -1; yOffset <= 1; yOffset++ {
-			num := grid.At(x + xOffset, y + yOffset).Or(numWithPos{})
-			if len(num.numString) != 0 {
-				nums[num] = num.numString
-			}
+	for nwp := range grid.AdjC(utils.Point{X: x, Y: y}) {
+		num := nwp.Or(numWithPos{})
+		if len(num.numString) != 0 {
+			nums[num] = num.numString
 		}
 	}
 	return nums

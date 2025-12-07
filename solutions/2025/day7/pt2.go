@@ -30,12 +30,8 @@ func processLineEverett(line string, counts []int) {
 		if char != '^' {
 			continue
 		}
-		if i > 0 {
-			counts[i-1] += counts[i]
-		}
-		if i < len(counts)-1 {
-			counts[i+1] += counts[i]
-		}
+		counts[i-1] += counts[i]
+		counts[i+1] += counts[i]
 		counts[i] = 0
 	}
 }

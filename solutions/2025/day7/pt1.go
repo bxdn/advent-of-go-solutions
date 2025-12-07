@@ -32,12 +32,8 @@ func processLine(line string, row []int) int {
 		if char != '^' {
 			continue
 		}
-		if i > 0 {
-			row[i-1] = 1
-		}
-		if i < len(row)-1 {
-			row[i+1] = 1
-		}
+		row[i-1] = 1
+		row[i+1] = 1
 		total += row[i]
 		row[i] = 0
 	}

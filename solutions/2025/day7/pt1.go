@@ -20,8 +20,8 @@ func pt1(input string) (string, error) {
 	row := make([]int, len(lines[0]))
 	row[strings.Index(lines[0], "S")] = 1
 	total := 0
-	for _, line := range lines {
-		total += processLine(line, row)
+	for i := 2; i < len(lines); i += 2 {
+		total += processLine(lines[i], row)
 	}
 	return strconv.Itoa(total), nil
 }

@@ -19,8 +19,8 @@ func pt2(input string) (string, error) {
 	lines := utils.GetLines(input)
 	counts := make([]int, len(lines[0]))
 	counts[strings.Index(lines[0], "S")] = 1
-	for _, line := range lines {
-		processLineEverett(line, counts)
+	for i := 2; i < len(lines); i += 2 {
+		processLineEverett(lines[i], counts)
 	}
 	return strconv.Itoa(sum(counts)), nil
 }

@@ -48,8 +48,7 @@ func input(year, day int) error {
 	if err != nil {
 		return err
 	}
-	body = bytes.TrimSpace(body)
-
+	body = bytes.Trim(body, "\r\n")
 	dirName := fmt.Sprintf("private/inputs/%d", year)
 	if e := os.MkdirAll(dirName, 0777); e != nil {
 		return fmt.Errorf("error creating directory: %w", e)
